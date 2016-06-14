@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	//函数中的this是在运行时决定的，而不是函数定义时
+
+	// 定义一个全局函数
+    function foo() {
+        console.log(this.fruit);
+    }
+    // 定义一个全局变量，等价于window.fruit = "apple";
+    var fruit = "apple";
+
+    // 此时函数foo中this指向window对象
+    // 这种调用方式和window.foo();是完全等价的
+    foo();  // "apple"
+
+    // // 自定义一个对象，并将此对象的属性foo指向全局函数foo
+    var pack = {
+        fruit: "orange",
+        foo: foo
+    };
+    // // 此时函数foo中this指向window.pack对象
+    pack.foo(); // "orange"
+
+    
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>

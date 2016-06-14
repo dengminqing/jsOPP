@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	function Person(name) {
+		this.name = name;
+	}
+
+	Person.prototype = {
+		getName: function() {
+			return this.name;
+		}
+	}
+
+	function Employee(name,employeeID){
+		this.name = name;
+		this.employeeID = employeeID;
+	}
+
+	Employee.prototype = new Person("Tom");
+
+	Employee.prototype.getEmployee = function(){
+		return this.employeeID;
+	}
+
+	var zhang = new Employee("zhang","123");
+	console.log(zhang.getName())//zhang
+	console.log((zhang.constructor === Employee)+"...constructor指向有错误");//false; constructor 指向有问题
+	console.log(zhang.constructor === Object);//true
+
+
+	//constructor 指向有错误，可以简单修正
+	Employee.prototype.constructor = Employee;
+	Employee.prototype.getEmployeeID = function(){
+		return this.employeeID;
+	}
+	var zhang2 = new Employee("zhang","123");
+	console.log(zhang2.getName())//zhang
+	console.log((zhang2.constructor === Employee)+"...constructor 指向正确");//true; constructor 指向正确
+	console.log(zhang2.constructor === Object);//false
+</script>
+	
+<!-- 解决创建Employee类时实例化Person是不合适的 -->
+<script type="text/javascript">
+	/*
+		创建Employee类时实例化Person是不合适的
+		但另一方面，我们又必须依赖于这种机制来实现继承。 解决办法是不在构造函数中初始化数据，而是提供一个原型方法（比如init）来初始化数据
+	*/
+	//创建一个空构造函数
+	function Person(){};
+
+	Person.prototype ={
+		init:function(name){
+			this.name = name;
+		},
+		getName :function(){
+			return this.name;
+		}
+	};
+
+	function Employee(){};
+
+	// 创建类的阶段不会初始化父类的数据，因为Person是一个空的构造函数
+
+	Employee.prototype = new Person();
+	Employee.prototype.constructor = Employee;
+
+	Employee.prototype.init = function(name,employeeID){
+		this.name = name;
+		this.employeeID = employeeID;
+	}
+	Employee.prototype.getEmployeeID = function(){
+		return this.employeeID;
+	}
+	//这种方式下，必须在实例化一个对象后手工调用init函数，如下：
+	var n = new Employee();
+	n.init("Tom","1212")
+	console.log(n.getName()+"...修正 new Preson()的不合适的");//Tom
+</script>
+
+<!-- 如何自动调用init函数？ -->
+<script type="text/javascript">
+	//如何自动调用init函数？--必须达到两个效果，构造类时不要调用init函数和实例化对象时自动调用init函数。看来我们需要在调用空的构造函数时有一个状态标示。
+	//创建一个空构造函数
+
+	// 创建一个全局的状态标示 - 当前是否处于类的构造阶段
+	var initializing = false;
+	function Person(){
+		if(!initializing){
+			this.init.apply(this,arguments);
+		}
+	};
+
+	Person.prototype ={
+		init:function(name){
+			this.name = name;
+		},
+		getName :function(){
+			return this.name;
+		}
+	};
+
+	function Employee(){
+		if(!initializing){
+			this.init.apply(this,arguments);
+		}
+	};
+
+	// 创建类的阶段不会初始化父类的数据，因为Person是一个空的构造函数
+
+	// 标示当前进入类的创建阶段，不会调用init函数
+	initializing = true;
+	Employee.prototype = new Person();
+	Employee.prototype.constructor = Employee;
+
+	initializing = false;
+
+	Employee.prototype.init = function(name,employeeID){
+		this.name = name;
+		this.employeeID = employeeID;
+	}
+
+	Employee.prototype.getEmployeeID = function(){
+		return this.employeeID;
+	}	
+
+	// 初始化类实例时，自动调用类的原型函数init，并向init中传递参数
+	var zhang = new Employee("ZhangSan", "1234");
+	console.log(zhang.getName()+"...自动调用init");
+	//但是这样就必须引入全局变量，这是一个不好的信号
+
+</script>
+
+<!--如何避免引入全局变量initializing？  -->
+<script type="text/javascript">
+	//我们需要引入一个全局的函数来简化类的创建过程，同时封装内部细节避免引入全局变量。
+	//当前是否处于创建类的阶段
+	var initializing = false;
+	//创建一个全局函数
+	function jClass(baseClass,prop){
+
+		//只接受一个参数的情况
+		if(typeof(baseClass) === "object"){	
+			prop = baseClass;			
+			baseClass = null;		
+		}
+		//本次调用所创建的类(构造函数)
+		function F(){
+			// 如果当前处于实例化类的阶段，则调用init原型函数
+			if(!initializing){
+				this.init.apply(this,arguments);
+			}
+		}
+
+		//如果此类需要从其他它类扩展
+		if(baseClass){
+			initializing = true;
+			F.prototype = new baseClass();
+			F.prototype.constructor = F;
+			initializing = false;
+		}
+
+		//覆盖父类的同名函数
+		for(var name in prop){
+			if(prop.hasOwnProperty(name)){
+				F.prototype[name] = prop[name];
+			}
+		}
+
+		return F;		
+	}
+
+	//使用jClass函数来创建类和继承类的方法：
+	var Person = jClass({
+		init:function(name){
+			this.name = name;
+		},
+		getName :function(){
+			return this.name;
+		}
+	})
+
+	var Employee = jClass(Person,{
+		init:function(name,employeeID){
+			this.name = name;
+			this.employeeID = employeeID;
+		},
+		getEmployeeID :function(){
+			return this.employeeID;
+		}
+	});
+
+	var zhang = new Employee("zhang","1234");
+	console.log(zhang.getName()+"..避免了initializing全局变量")
+	console.log(zhang.getEmployeeID())
+	//但是这里面还存在明显的瑕疵，Employee的初始化函数init无法调用父类的同名方法
+</script>
+
+
+</head>
+<body>
+    
+</body>
+</html>

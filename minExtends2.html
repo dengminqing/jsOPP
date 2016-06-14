@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	//1.混合方式继承
+	//改进 将父类实现无参无逻辑的父类构造函数
+	function Employee(){}
+
+	//通过字面量对象设置父类的原型，给父类添加实例方法
+	Employee.prototype = {
+		 //由于此处添加实例方法时也是通过修改父类原型处理的，
+    	//所以必须修改父类原型的constructor指向，避免父类实例的constructor属性指向Object函数
+    	constructor:Employee,
+
+    	//改进方法
+    	//把构造逻辑搬到init方法中来
+    	init:function(name,salary){
+    		this.name = name;
+    		this.salary = salary;
+    	},
+
+    	getName : function(){
+    		return this.name;
+    	},
+    	getSalary : function(){
+    		return this.salary;
+    	},
+    	toString : function(){
+    		return this.name+"'s salary is " +this.getSalary() +".";
+    	}	
+	};
+
+	//无参无逻辑的子类构造函数
+	function Manager(){}
+
+	//将父类的一个实例设置为子类的原型，实现方法继承
+	Manager.prototype = new Employee();
+
+	//修改子类原型的constructor指向，避免子类实例的constructor属性指向父类的构造函数
+	Manager.prototype.constructor =Manager;//指向---使用引用子类
+
+	//给子类添加实例方法,重写父类的方法
+	Manager.prototype.init = function(name,salary,percentage){
+		//借用父类的init方法，实现属性继承（name, salary）
+		Employee.prototype.init.call(this,name,salary);
+		//Employee.prototype.init.apply(this,[name,salary]);
+		
+		this.percentage = percentage;
+	}
+	Manager.prototype.getSalary = function(){
+		return this.salary + this.salary * this.percentage;
+	}
+
+	var e = new Employee();
+	e.init("Tom",5000);
+	var m = new Manager();
+	m.init("Mary",8000,0.15);
+
+	console.log(e.toString());
+	console.log(m.toString());
+
+	console.log(m instanceof Manager); //true
+	console.log(m instanceof Employee); //true
+	console.log(e instanceof Employee); //true
+	console.log(e instanceof Manager); //false
+
+	/* 
+		用init方法来完成构造功能，就可以保证在设置子类原型时（Manager.prototype = new Employee()），父类的实例化操作一定不会出错;
+		唯一不好的是在调用类的构造函数来初始化实例的时候，必须在调用构造函数后手动调用init方法来完成实际的构造逻辑;
+
+	*/
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>

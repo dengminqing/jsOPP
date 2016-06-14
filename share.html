@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<style>
+.div1{
+	width: 150px;height: 200px;background: green;position: absolute;left:-150px;
+}	
+.div1 span{
+	position: absolute;width: 20px;height: 60px;line-height: 20px;background: red;color:#fff;
+	right: -20px;top:70px;
+}
+</style>
+<script type="text/javascript">
+	var  time = null;		
+	function startMove(speed,disantce){
+		var oDiv = document.getElementById('div1');
+		
+		clearInterval(time);
+		time = setInterval(function(){
+			if(oDiv.offsetLeft == disantce){
+				clearInterval(time)
+			}else{
+				oDiv.style.left= oDiv.offsetLeft+speed+'px';
+			}
+		},30);
+	}
+
+	window.onload = function(){
+		var oDiv = document.getElementById('div1');
+		oDiv.onmouseover = function(event) {	
+			startMove(10,0);
+		};
+		oDiv.onmouseout = function(event) {	
+			startMove(-10,-150);
+		};
+	}
+</script>
+</head>
+<body>
+	<div id="div1" class="div1"><span>分享</span></div>    
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>面向对象的选项卡</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<style>
+	#div1 input{background: #fff}
+	#div1 .active{background: yellow}
+	#div1 div{width: 200px; height: 200px;background: #ccc;display: none;}
+</style>
+<script type="text/javascript">
+ 
+  //将onload变成构造函数---将全局变量写成属性----将函数写成方法
+	function Tabs(id){
+		var _this = this;
+		var oDiv = document.getElementById(id);		
+		this.oBtn = oDiv.getElementsByTagName("input");
+		this.aDiv = oDiv.getElementsByTagName("div");
+		this.len = this.oBtn.length;
+		for(var i = 0;i < this.len;i++){
+			this.oBtn[i].index = i;
+			this.oBtn[i].onclick = function(){
+				_this.fnClick(this);
+			}
+		}
+	}
+	//函数不能嵌套
+	Tabs.prototype.fnClick = function(oBtn){
+		for(var i =0 ;i < this.len;i++){
+			this.oBtn[i].className = '';
+			this.aDiv[i].style.display ="none";
+		}
+		oBtn.className ='active';
+		this.aDiv[oBtn.index].style.display = "block";
+	}
+	window.onload =function(){
+		new Tabs("div1");
+	}
+	
+</script>
+</head>
+<body>
+	<div id="div1" class="">    
+		<input class="active" type="button" value="a" />
+		<input type="button" value="b" />
+		<input type="button" value="c" />
+		<div style="display: block">123</div>
+		<div class="">2222</div>
+		<div class="">sdsd</div>
+	</div>
+</body>
+</html>

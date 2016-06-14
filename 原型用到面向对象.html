@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>原型用到面向对象</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	function createPerson(name,qq)
+ 	{ 		
+ 		this.name = name;
+ 		this.qq = qq; 		
+ 	}
+
+ 	createPerson.prototype.showName = function()
+ 	{
+		alert("我的名字:"+this.name)
+	}
+
+	createPerson.prototype.showQQ = function()
+	{
+		alert("我的QQ:"+this.qq)
+	}
+
+ 	var obj = new  createPerson("tom","22323232323");
+ 	var obj2 = new createPerson("tom2","495152950");
+ 	obj.showName();
+ 	obj.showQQ();
+ 	obj2.showName();
+ 	obj2.showQQ();
+</script>
+</head>
+<body>
+    
+</body>
+</html>

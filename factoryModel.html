@@ -1,0 +1,70 @@
+<!DOCTYPE Html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<script type="text/javascript">
+	var BicycleShop = function(name){
+		this.name = name;
+		this.method = function(){
+			return this.name;
+		}
+	};
+
+	BicycleShop.prototype = {
+		constructor:BicycleShop,
+		sellBicycle:function(model){
+			var bicycle =this.createBicyle(model);
+			bicycle.a();
+			bicycle.b();			
+			return bicycle;
+		},
+		createBicyle:function(model){
+			throw new Error("父类是抽象类不能直接调用,需要子类重写该方法");
+		}
+		
+	};
+
+	//继承写法
+	function extend(Sub,Sup){
+		var F = function(){};
+		F.prototype = Sup.prototype;
+		Sub.prototype = new F();
+		Sub.prototype.constructor =Sub;
+
+		Sub.sup = Sup.prototype;
+
+		if(Sup.prototype.constructor === Object.prototype.constructor){
+			Sup.prototype.constructor =Sup;
+		}
+	};
+
+	var BicycleChild = function(name){
+		this.name = name;
+		BicycleShop.call(this,name);
+	}
+
+	extend(BicycleChild,BicycleShop);
+
+	BicycleChild.prototype.createBicyle = function(){
+		var a = function(){
+			console.log("执行a的业务");
+		};
+		var b = function(){
+			console.log("执行b的业务");
+		};
+		return {
+			a:a,
+			b:b
+		}
+	};	
+	
+	var childClass = new BicycleChild("longyi");
+	console.log(childClass.name)
+	childClass.sellBicycle("mode");
+
+	//好处：第一：弱化对象间的耦合，防止代码的重复。在一个方法中进行类的实例化，可以消除重复性的代码。第二：重复性的代码可以放在父类去编写，子类继承于父类的所有成员属性和方法，子类只专注于实现自己的业务逻辑。
+</script>
+</head>
+<body></body>
+</html>

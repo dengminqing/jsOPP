@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>对象组成</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	//变量----自由的，不属于任何人
+ 	//属性----属于一个对象  
+ 	//this 当前的函数(方法)属于谁
+
+
+ 	//工厂方式:缺点，没new；函数重复--消耗资源
+ 	function createPerson(name,qq)
+ 	{
+ 		var obj = new Object();
+ 		//加工
+ 		obj.name = name;
+ 		obj.qq = qq;
+
+ 		obj.showName = function(){
+ 			alert("我的名字:"+this.name)
+ 		}
+ 		obj.showQQ = function(){
+ 			alert("我的QQ:"+this.qq)
+ 		}
+ 		//出厂
+ 		return obj;
+ 	}
+
+ 	var obj = new createPerson("tom","22323232323");
+ 	var obj2 = new createPerson("tom2","495152950");
+</script>
+</head>
+<body>
+    
+</body>
+</html>

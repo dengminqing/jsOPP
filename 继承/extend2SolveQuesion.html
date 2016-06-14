@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	// 定义Person类
+        function Person(name) {
+            this.name = name;
+        }
+        Function.prototype.method = function(name, func) {
+            // this指向当前函数，也即是typeof(this) === "function"
+            this.prototype[name] = func;
+            return this;
+        };
+        Function.prototype.inherits = function(parent) {
+            this.prototype = new parent();
+            this.prototype.constructor = this;
+            this.prototype.uber = function(name) {
+                f = parent.prototype[name];
+                return f.apply(this, Array.prototype.slice.call(arguments, 1));
+            };
+        };
+        // 定义Person的原型方法
+        Person.method("getName", function() {
+            return this.name;
+        });  
+        
+        // 定义Employee类
+        function Employee(name, employeeID) {
+            this.name = name;
+            this.employeeID = employeeID;
+        }
+        // 指定Employee类从Person类继承
+        Employee.inherits(Person);
+        // 定义Employee的原型方法
+        Employee.method("getEmployeeID", function() {
+            return this.employeeID;
+        });
+        Employee.method("getName", function() {
+            // 注意，可以在子类中调用父类的原型方法
+            return "Employee name: " + this.uber("getName");
+        });
+        // 实例化子类
+        var zhang = new Employee("ZhangSan", "1234");
+        console.log(zhang.getName());   // "Employee name: ZhangSan"
+</script>
+</head>
+<body>
+    
+</body>
+</html>

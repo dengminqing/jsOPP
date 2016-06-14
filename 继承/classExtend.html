@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	(function(global){
+		"use strict";
+		Function.prototype.extend = function(props){
+			var Super = this;//父类构造函数
+			//父类原型
+			var TmpCls = function(){};
+			TmpCls.prototype = new TmpCls();
+			var superProto = new TmpCls();
+
+			//父类构造器
+			var _super = function(){
+				return Super.apply(this, arguments)
+			}
+
+			var Cls = function(){
+				if(props.constructor){
+					//执行构造函数
+					props.constructor.apply(this, arguments);
+				}
+				for(var i in Super.prototype){
+					_super[i] = Super.prototype[i].bind(this);
+				}
+			}
+			Cls.prototype = superProto;
+			Cls.prototype._super = _super;
+
+			//复制属性
+			for(var i in props){
+				if(i !=="constructor"){
+					Cls.prototype[i] = props[i];
+				}
+			}
+
+			return Cls;
+		}
+
+		function Animal(name){
+			this.name = name;
+
+		}
+
+		Animal.prototype.sayName =function(){
+			console.log("My Name is "+this.name);
+		}
+
+		var Programmer = Animal.extend({
+			constructor:function(name){
+				this._super(name);
+			},
+			sayName:function(){				
+				this._super.sayName(name)
+			},
+			program:function(){
+				console.log("I'm coding...")
+			}
+		})
+
+		var animal = new Animal("tom");
+		var akira = new Programmer("tony");
+		animal.sayName();
+		akira.sayName();
+		akira.program();
+	}(this))
+
+	var iArray = []; 
+	function getRandom(istart, iend){
+	    var iChoice = istart - iend +1;
+	    return Math.floor(Math.random() * iChoice + istart);
+	}
+	for(var i=0; i<10; i++){
+	     iArray.push(getRandom(10,100));
+	}
+	iArray.sort();
+	console.log(iArray)
+</script>
+</head>
+<body>
+    
+</body>
+</html>

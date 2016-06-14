@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	//1.混合方式继承
+	function Employee(name,salary){
+		this.name = name;
+		this.salary = salary;
+	}
+	//通过字面量对象设置父类的原型，给父类添加实例方法
+	Employee.prototype = {
+		 //由于此处添加实例方法时也是通过修改父类原型处理的，
+    	//所以必须修改父类原型的constructor指向，避免父类实例的constructor属性指向Object函数
+    	constructor:Employee,
+    	getName : function(){
+    		return this.name;
+    	},
+    	getSalary : function(){
+    		return this.salary;
+    	},
+    	toString : function(){
+    		return this.name+"'s salary is " +this.getSalary() +".";
+    	}	
+	};
+
+	function Manager(name,salary,percentage){
+		Employee.call(this,name,salary);
+		this.percentage = percentage;
+	}
+	//将父类的一个实例设置为子类的原型，实现方法继承
+	Manager.prototype = new Employee();
+
+	//修改子类原型的constructor指向，避免子类实例的constructor属性指向父类的构造函数
+	Manager.prototype.constructor =Manager;//指向---使用引用子类
+
+	//给子类添加实例方法,重写父类的方法
+	Manager.prototype.getSalary = function(){
+		return this.salary + this.salary * this.percentage;
+	}
+
+	var e = new Employee("tom",5000);
+	var m = new Manager("mary",8000,0.15);
+
+	console.log(e.toString());
+	console.log(m.toString());
+
+	console.log(m instanceof Manager); //true
+	console.log(m instanceof Employee); //true
+	console.log(e instanceof Employee); //true
+	console.log(e instanceof Manager); //false
+
+	/*
+		(1)代码阻止不够优雅，继承实现的关键部分的逻辑是通用,缺乏封装
+		   解决方法：利用模块化方式，将通用逻辑封装起来，对外提供简单的接口
+		(2)在给子类的原型设置成父类的实例时，调用的是new SuperClass()，这是对父类构造函数的无参调用，那么就要求父类必须有无参的构造函数。
+		解决方式：把父类跟子类的构造函数全部无参化，并且在构造函数内不写任何逻辑，把构造函数的逻辑都迁移到init这个实例方法，比如前面给出的Employee和Manager的例子就能改造成下面这个样子
+	*/
+</script>
+</head>
+<body>
+    
+</body>
+</html>

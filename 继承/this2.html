@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	//全局函数apply和call可以用来改变函数中this的指向
+
+	// 定义一个全局函数
+    function foo() {
+        console.log(this.fruit);
+    }
+    
+    // 定义一个全局变量
+    var fruit = "apple";
+    // 自定义一个对象
+    var pack = {
+        fruit: "orange"
+    };
+    
+    // 等价于window.foo();
+    foo.apply(window);  // "apple"
+    // 此时foo中的this === pack
+    foo.apply(pack);    // "orange"
+
+    
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>

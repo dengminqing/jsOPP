@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+	/*
+	 3）在构造子类的时候，是把子类的原型设置成了父类的一个实例，这个是不符合语义的，继承应该发生在类与类之间，而不是类与实例之间。之所以要用父类的一个实例来作为子类的原型：
+	 SubClass.prototype = new SuperClass();
+	*/
+	//用来复制父类原型，由于父类原型上约定只写实例方法，所以复制的时候不必担心引用的问题
+	var copy = function(source){
+		var target ={};
+		for(var i in source){
+			if(source.hasOwnProperty(i)){
+				target[i] = source[i];
+			}
+		}
+		return target;
+	}
+
+	function Employee(){
+		this.init.apply(this,arguments);
+	}
+
+	Employee.prototype ={
+		constructor:Employee,
+		init:function(name,salary){
+			this.name = name;
+			this.salary = salary;
+		},
+		getName:function(){
+			return this.name;
+		},
+		getSalary:function(){
+			return this.salary;
+		},
+		toString:function(){
+			return this.name +"'s salary is "+this.getSalary()+".";
+		}
+	}
+
+	function Manager(){
+		this.baseProto = Employee.prototype;
+		this.init.apply(this,arguments);
+	}
+
+	Manager.prototype = copy(Employee.prototype);
+
+	Manager.prototype.constructor =Manager;
+
+	Manager.prototype.init =(function(name,func){
+		return function(){
+			var old = this.base;
+			this.base = this.baseProto[name];
+			var ret = func.apply(this,arguments);
+			this.base = old;
+			return ret;
+		}
+	})('init',function(name,salary,percentage){
+		this.base(name,salary);
+		this.percentage = percentage;
+	})
+
+	Manager.prototype.getSalary = function(){
+		return this.salary + this.salary * this.percentage;
+	}
+	var e = new Employee('jason', 5000);
+	var m = new Manager('tom', 8000, 0.15);
+	console.log(e.toString()); //jason's salary is 5000.
+	console.log(m.toString()); //tom's salary is 9200.
+	 
+	console.log(m instanceof Manager); //true
+	console.log(m instanceof Employee); //false
+	console.log(e instanceof Employee); //true
+	console.log(e instanceof Manager); //false 
+
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>

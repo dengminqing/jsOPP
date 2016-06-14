@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>extends</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript">
+    //使用prototype模拟类和继承的实现。 prototype本质上还是一个JavaScript对象。并且每个函数都有一个默认的prototype属性。 如果这个函数被用在创建自定义对象的场景中，我们称这个函数为构造函数
+
+
+    function Person(name,sex){
+        this.name = name;
+        this.sex = sex;
+    }
+
+    Person.prototype = {
+        getNanme :function(){
+            return this.name;
+        },
+        getSex :function(){
+            return this.sex;
+        }
+    }
+
+    var x = new Person("Tom","man");
+    console.log(x.getSex())
+
+</script>
+</head>
+<body>
+    
+</body>
+</html>
